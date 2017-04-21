@@ -38,7 +38,8 @@ hero = {
 monster = {
 	"x": 300,
 	"y": 300,
-	"speed": 20
+	"speed": 1,
+	"direction": "N"
 }
 
 power_up = {
@@ -46,15 +47,20 @@ power_up = {
 	"y": 250
 
 }
+direction = [
+	"N", "S", "E", "W", "NE", "NW", "SE", "SW"
 
+
+
+]	
 
 screen_size = (screen["height"], screen["width"])
 pygame_screen = pygame.display.set_mode(screen_size)
-pygame.display.set_caption("Goblin Chase")
+pygame.display.set_caption("monster Chase")
 
 background_image = pygame.image.load('./images/battle1.png')
 
-hero_image = pygame.image.load('./images/hero.png')
+hero_image = pygame.image.load('./images/hp.png')
 
 monster_image = pygame.image.load('./images/LV.png')
 monster_image_scaled = pygame.transform.scale(monster_image, (50, 50))
@@ -64,12 +70,15 @@ power_up_image = pygame.image.load('./images/butterbeer.png')
 pygame.mixer.music.load('./sounds/music.wav')
 pygame.mixer.music.play(-1)
 
+tick = 0
 
 ####Main Game Loop Begins here
 
 game_on = True
 
 while game_on:
+	tick +=1
+	print tick
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			game_on = False
@@ -96,7 +105,7 @@ while game_on:
 			if event.key == keys ['right']:
 				keys_down['right'] = False
 
-
+### update hero's position
 	if keys_down['up']:
 		hero['y'] -= hero['speed']
 	elif keys_down['down']:
@@ -105,6 +114,45 @@ while game_on:
 		hero['x'] -= hero['speed']
 	elif keys_down['right']:
 		hero['x'] += hero['speed']
+
+
+
+	#Update monster position
+	if (monster["direction"]) == "N":
+			monster['y'] -= monster['speed']
+	elif	monster["direction"] == "S":
+			monster['y'] += monster['speed']
+	elif	monster["direction"] == "E":
+			monster['x'] += monster['speed']
+	elif    monster["direction"] == "W":
+			monster['x'] -= monster['speed']
+	elif    monster["direction"] == "NE":
+			monster['y'] -= monster['speed']
+			monster['x'] += monster['speed']
+	elif    monster["direction"] == "NW":
+			monster['y'] -= monster['speed']
+			monster['y'] -= monster['speed']
+	elif    monster["direction"] == "SE":
+			monster['y'] += monster['speed']
+			monster['x'] += monster['speed']
+	elif    monster["direction"] == "SW":
+			monster['y'] += monster['speed']
+			monster['x'] -= monster['speed']
+
+
+
+	if tick % 60 == 0:
+		new_dir_index = randint(0, len(direction)-1)
+		monster['direction'] = direction[new_dir_index]
+
+	if (monster['x'] > screen['width']):
+		monster['x'] = 0
+	elif (monster['x'] < 0):
+		monster['x'] = screen['width']
+	if (monster['y'] > screen['height']):
+		monster['y'] = 0
+	elif (monster['y'] < 0):
+		monster['y'] = screen['height']
 
 	### Render (these items layer so background should be first)
 	pygame_screen.blit(background_image, [0,0])
