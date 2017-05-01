@@ -14,6 +14,10 @@ from Peter_Pettigrew import Peter_Pettigrew
 
 from Dolores_Umbridge import Dolores_Umbridge
 
+from Lucius_Malfoy import Lucius_Malfoy
+
+from Lord_Voldemort import Lord_Voldemort
+
 ### Start the Game ###
 pygame.init()
 
@@ -52,6 +56,12 @@ keys_down = {
 	"down": False
 }
 
+debuff = {
+	"x": 250,
+    "y": 250
+}
+
+
 direction = [
 	"N", "S", "E", "W", "NE", "NW", "SE", "SW"
 
@@ -60,6 +70,8 @@ direction = [
 Harry_Potter = Harry_Potter(pygame_screen)
 Peter_Pettigrew = Peter_Pettigrew(pygame_screen)
 Dolores_Umbridge = Dolores_Umbridge(pygame_screen)
+Lucius_Malfoy = Lucius_Malfoy(pygame_screen)
+Lord_Voldemort = Lord_Voldemort(pygame_screen)
 
 
 Heroes = Group()
@@ -69,9 +81,9 @@ Villains.add(Peter_Pettigrew)
 
 
 ### Start Screen. ###
-game_start = True
+game_start = False	
 
-while (game_start==True):
+while (game_start==False):
 
 	background_image = pygame.image.load('./images/start_screen.png')
 	myfont=pygame.font.SysFont("Edwardian Script ITC", 40)
@@ -80,13 +92,14 @@ while (game_start==True):
 	nlabel = pygame.image.load('./images/Letters.png')
 	for event in pygame.event.get():
 		if event.type== pygame.KEYDOWN:
-			game_start=False
+			game_start=True
 
 	pygame_screen.blit(background_image, [0,0])
 	pygame_screen.blit(nlabel,(275,100))
 	pygame_screen.blit(nlabel2,(240, 260))
 	pygame_screen.blit(nlabel3,(385, 215))
 	pygame.display.flip()
+
 
 
 ###     Main Game Loop Begins here.   ###
@@ -99,12 +112,18 @@ while game_on:
 
 	background_image = pygame.image.load('./images/Battle_Screen.png')
 	pygame_screen.blit(background_image, [0,0])
+
+	font = pygame.font.Font(None, 25)
+	wins_text = font.render("Avada Kedavra: %d" % (Harry_Potter.location['Avada Kedavra']), True, (0,0,0))
+	pygame_screen.blit(wins_text, [40,40])
+
+	debuff_image = pygame.image.load('./images/butterbeer.png')
+	pygame_screen.blit(debuff_image, [debuff['x'], debuff['y']])
+
 	Harry_Potter.draw_me()
 	
 	for Villain in Villains:
 		Villain.draw_me()
-
-
 
 
 	tick +=1
@@ -112,7 +131,7 @@ while game_on:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			game_on = False
-		elif event.type == pygame.KEYDOWN:
+		if event.type == pygame.KEYDOWN:
 			if event.key == keys ['up']:
 				keys_down['up'] = True
 			if event.key == keys ['down']:
@@ -132,12 +151,22 @@ while game_on:
 			if event.key == keys ['right']:
 				keys_down['right'] = False
 
+	distance_between = fabs(Harry_Potter.location['x'] - debuff['x']) + fabs(Harry_Potter.location['y'] - debuff['y'])
+	if (distance_between < 32):
+		rand_X = randint(0, screen['width'])
+		rand_Y = randint(0, screen['height'])
+		debuff['x'] = rand_X
+		debuff['y'] = rand_Y
 
+		Harry_Potter.location['speed'] -= 2
+			
 
 
 	Harry_Potter.move(keys_down, screen)
 	Peter_Pettigrew.move(direction, screen, tick)
 	Dolores_Umbridge.move(direction,screen, tick)
+	Lucius_Malfoy.move(direction, screen, tick)
+	Lord_Voldemort.move(direction, screen, tick)
 	
 
 	enemy_dies  = groupcollide(Heroes, Villains, False, True)
@@ -151,38 +180,49 @@ while game_on:
 
 		if enemy_level == 2:
 			Villains.add(Dolores_Umbridge)
+			Harry_Potter.location['Avada Kedavra'] += 1
+			print "level 2"
 			
-		# if enemy_level == 3:
+		if enemy_level == 3:
+			Villains.add(Lucius_Malfoy)
+			Harry_Potter.location['Avada Kedavra'] += 1
+			print "level 3"
 
+
+		if enemy_level == 4:
+			Villains.add(Lord_Voldemort)
+			Harry_Potter.location['Avada Kedavra'] += 1
+			print "level 4"
+
+		if enemy_level == 5:
+			game_on = False
+
+			### debuff ###
+
+
+gameOver = True
+
+while gameOver:
+	background_image = pygame.image.load('./images/Happy.jpg')
+	myfont=pygame.font.SysFont("Edwardian Script ITC", 40)
+	nlabel3= myfont.render("CONGRATULATIONS!", 1, (255, 255, 0))
+	nlabel2=myfont.render("You defeated the Death Eaters!", 1, (255, 255, 0))
+	nlabel = pygame.image.load('./images/Letters.png')
+	for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			game_on = False
+
+	pygame_screen.blit(background_image, [0,0])
+	pygame_screen.blit(nlabel,(20,20))
+	pygame_screen.blit(nlabel2,(30, 160))
+	pygame_screen.blit(nlabel3,(25, 10))
+	pygame.display.flip()
 
 
 
 			
 			
-		# Harry_Potter['wins'] += 1
-
-		# distance_between = fabs(Harry_Potter.location['x'] - Peter_Pettigrew.location['x']) + fabs(Harry_Potter.location['y'] - Peter_Pettigrew.location['y'])
-		# # defeat = 0
-		# if (distance_between < 50):
-		# 	rand_X = randint(0, screen['width'])
-		# 	rand_Y = randint(0, screen['height'])
-		# 	Peter_Pettigrew.location['x'] = rand_X
-		# 	Peter_Pettigrew.location['y'] = rand_Y
 
 
-# debuff = {
-# 	"x": 250,
-# 	"y": 250
-
-
-# 	## debuff
-# distance_between = fabs(Harry_Potter['x'] - debuff['x']) + fabs(Harry_Potter['y'] - debuff['y'])
-# if (distance_between < 32):
-# 	rand_X = randint(0, screen['width'])
-# 	rand_Y = randint(0, screen['height'])
-# 	debuff['x'] = rand_X
-# 	debuff['y'] = rand_Y
-
-# 	Harry_Potter['speed'] -= 5
 
 

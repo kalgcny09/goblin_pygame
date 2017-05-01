@@ -13,8 +13,8 @@ class Dolores_Umbridge(Sprite):
 		self.location = {
 							"x": 325,
 							"y": 375,
-							"speed": 4,
-							"direction": "NE"
+							"speed": 5,
+							"direction": "W"
 						}
 		self.image = pygame.image.load('./images/Dolores_Umbridge.png')
 		self.rect = self.image.get_rect()

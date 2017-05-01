@@ -11,7 +11,7 @@ class Harry_Potter(Sprite):
 							"x": 100,
 							"y": 100,
 							"speed": 10,
-							"wins": 0
+							"Avada Kedavra": 0
 						}
 		self.image = pygame.image.load('./images/Harry_Potter.png')
 		self.rect = self.image.get_rect()
